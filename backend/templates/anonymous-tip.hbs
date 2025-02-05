@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #553c9a; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .section { margin-bottom: 20px; }
+        .evidence { background: #f8f9fa; padding: 15px; border-radius: 5px; }
+        .footer { text-align: center; font-size: 12px; color: #666; margin-top: 30px; }
+        .alert { background: #fff3cd; color: #856404; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>New Anonymous Tip</h1>
+            <p>Tip ID: {{tip_id}}</p>
+        </div>
+        
+        <div class="content">
+            <div class="alert">
+                <strong>⚠️ Anonymous Tip</strong>
+                <p>This information was submitted anonymously through the MP Cyber Safety Platform.</p>
+            </div>
+
+            <div class="section">
+                <h2>Tip Details</h2>
+                <p><strong>Type:</strong> {{tip_type}}</p>
+                <p><strong>Timestamp:</strong> {{timestamp}}</p>
+            </div>
+
+            <div class="section">
+                <h2>Content</h2>
+                <div class="evidence">
+                    <p>{{content}}</p>
+                </div>
+            </div>
+
+            {{#if additional_details}}
+            <div class="section">
+                <h2>Additional Details</h2>
+                <div class="evidence">
+                    <p>{{additional_details}}</p>
+                </div>
+            </div>
+            {{/if}}
+
+            {{#if evidence_urls}}
+            <div class="section">
+                <h2>Evidence URLs</h2>
+                <div class="evidence">
+                    <ul>
+                        {{#each evidence_urls}}
+                        <li><a href="{{this}}">{{this}}</a></li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+
+        <div class="footer">
+            <p>This is an automated notification from the MP Cyber Safety Platform.</p>
+            <p>Please investigate and take appropriate action.</p>
+        </div>
+    </div>
+</body>
+</html> 

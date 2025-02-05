@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #1a365d; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .section { margin-bottom: 20px; }
+        .evidence { background: #f8f9fa; padding: 15px; border-radius: 5px; }
+        .footer { text-align: center; font-size: 12px; color: #666; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>New Cyber Threat Report</h1>
+            <p>Reference ID: {{reference_id}}</p>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <h2>Threat Details</h2>
+                <p><strong>URL:</strong> {{url}}</p>
+                <p><strong>Threat Type:</strong> {{threat_type}}</p>
+                <p><strong>Timestamp:</strong> {{timestamp}}</p>
+            </div>
+
+            {{#if reporter_info}}
+            <div class="section">
+                <h2>Reporter Information</h2>
+                {{#if reporter_info.name}}
+                <p><strong>Name:</strong> {{reporter_info.name}}</p>
+                {{/if}}
+                {{#if reporter_info.contact}}
+                <p><strong>Contact:</strong> {{reporter_info.contact}}</p>
+                {{/if}}
+                {{#if reporter_info.location}}
+                <p><strong>Location:</strong> {{reporter_info.location}}</p>
+                {{/if}}
+            </div>
+            {{/if}}
+
+            <div class="section">
+                <h2>Evidence</h2>
+                <div class="evidence">
+                    <p><strong>Detection Count:</strong> {{evidence.detection_counts}}</p>
+                    <p><strong>Identified Threats:</strong></p>
+                    <ul>
+                        {{#each evidence.threats}}
+                        <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated report from the MP Cyber Safety Platform.</p>
+            <p>Please investigate and take appropriate action.</p>
+        </div>
+    </div>
+</body>
+</html> 

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #2c5282; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .section { margin-bottom: 20px; }
+        .reference { background: #ebf8ff; padding: 15px; border-radius: 5px; text-align: center; }
+        .footer { text-align: center; font-size: 12px; color: #666; margin-top: 30px; }
+        .thank-you { font-size: 1.2em; color: #2c5282; text-align: center; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Cyber Threat Report Confirmation</h1>
+        </div>
+        
+        <div class="content">
+            <p class="thank-you">Thank you for reporting a potential cyber threat!</p>
+
+            <div class="section">
+                <p>Dear {{#if report.reporter_info.name}}{{report.reporter_info.name}}{{else}}Concerned Citizen{{/if}},</p>
+                
+                <p>We have received your report about a suspicious URL. Your report has been forwarded to the MP Cyber Cell for investigation.</p>
+                
+                <div class="reference">
+                    <h3>Your Reference ID</h3>
+                    <p style="font-size: 1.2em; font-weight: bold;">{{reference_id}}</p>
+                    <p>Please keep this ID for future reference.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>Report Summary</h3>
+                <ul>
+                    <li><strong>Reported URL:</strong> {{report.url}}</li>
+                    <li><strong>Threat Type:</strong> {{report.threat_type}}</li>
+                    <li><strong>Submission Time:</strong> {{report.timestamp}}</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h3>What Happens Next?</h3>
+                <ol>
+                    <li>The MP Cyber Cell will review your report</li>
+                    <li>They may contact you for additional information if needed</li>
+                    <li>Appropriate action will be taken based on the investigation</li>
+                </ol>
+            </div>
+
+            <div class="section">
+                <p>If you notice any other suspicious cyber activities, please don't hesitate to report them through our platform.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>This is an automated confirmation from the MP Cyber Safety Platform.</p>
+            <p>For urgent matters, please contact the MP Cyber Cell directly.</p>
+        </div>
+    </div>
+</body>
+</html> 
