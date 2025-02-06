@@ -1,12 +1,15 @@
-document.addEventListener('DOMContentLoaded', function() {
-	const scanButton = document.getElementById('scanButton');
+document.addEventListener('DOMContentLoaded', async function() {
 	const resultDiv = document.getElementById('result');
-	const resultTitle = document.getElementById('resultTitle');
 	const resultIcon = document.querySelector('.result-icon');
+	const resultTitle = document.getElementById('resultTitle');
+	const reportButton = document.getElementById('reportButton');
 	const confidenceFill = document.getElementById('confidenceFill');
 	const threatLevel = document.getElementById('threatLevel');
 	const featuresList = document.getElementById('featuresList');
 	const featuresDiv = document.getElementById('features');
+
+	// Initially hide the report button
+	reportButton.style.display = 'none';
 
 	function formatFeatureName(feature) {
 		return feature
@@ -27,23 +30,20 @@ document.addEventListener('DOMContentLoaded', function() {
 		resultIcon.textContent = is_phishing ? '⚠️' : '✅';
 		resultTitle.textContent = is_phishing ? 'Potentially Unsafe' : 'Safe';
 		
-		// Animate confidence bar
-		setTimeout(() => {
-			confidenceFill.style.width = `${confidence * 100}%`;
-			// Remove backgroundColor setting as we're using gradient in CSS
-			confidenceFill.style.background = 'linear-gradient(to right, #00FFA9, #FF0084)';
-		}, 100);
+		// Show confidence bar
+		confidenceFill.style.width = `${confidence * 100}%`;
 		
-		// Update threat level with animation
+		// Update threat level
 		threatLevel.className = `threat-level ${threat_level}`;
 		threatLevel.textContent = threat_level.toUpperCase();
 		
-		// Update features list with staggered animation
+		// Update features list
 		featuresList.innerHTML = '';
 		const hasFeatures = Object.values(features).some(v => v);
+
 		
 		if (hasFeatures) {
-			Object.entries(features).forEach(([feature, isPresent]) => {
+			Object.entries(features).forEach(([feature, isPresent], index) => {
 				if (isPresent) {
 					const featureItem = document.createElement('div');
 					featureItem.className = 'feature-item';
@@ -62,38 +62,81 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 
 		// Show features section with animation
-		setTimeout(() => {
-			featuresDiv.classList.add('visible');
-		}, 300);
+		featuresDiv.classList.add('visible');
+
+		// Show/hide report button based on threat level
+		reportButton.style.display = (threat_level === 'high' || threat_level === 'medium') ? 'block' : 'none';
 	}
 
-	scanButton.addEventListener('click', async () => {
-		// Update button state with loading animation
-		scanButton.disabled = true;
-		scanButton.classList.add('loading');
-		scanButton.innerHTML = '<span>Scanning...</span>';
-		
-		// Reset previous results
-		resultDiv.style.display = 'none';
-		featuresDiv.classList.remove('visible');
-		
+	// Automatically trigger scan when popup opens
+	try {
+		const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+		const url = tab.url;
+
+		// Show loading state while preserving structure
+		resultDiv.style.display = 'block';
+		resultTitle.textContent = 'Analyzing...';
+		resultIcon.textContent = '⚡';
+		confidenceFill.style.width = '0%';
+		threatLevel.textContent = '';
+		featuresList.innerHTML = `
+			<div class="feature-item">
+				<span class="loading-icon">⚡</span>
+				<span class="feature-text">Analyzing URL features...</span>
+			</div>
+		`;
+		featuresDiv.classList.add('visible');
+
+		chrome.runtime.sendMessage({ action: 'analyzeUrl', url }, response => {
+			console.log('Received response:', response);
+			if (response) {
+				console.log('Confidence:', response.confidence);
+				console.log('Features:', response.features);
+				console.log('Threat Level:', response.threat_level);
+				updateUI(response);
+			} else {
+				console.error('No response received');
+				resultTitle.textContent = 'Error';
+				resultIcon.textContent = '⚠️';
+				featuresList.innerHTML = `
+					<div class="feature-item">
+						<span style="color: rgba(255, 0, 132, 0.9);">⚠️</span>
+						<span class="feature-text">Error: No response received</span>
+					</div>
+				`;
+			}
+		});
+	} catch (error) {
+		console.error('Error:', error);
+		resultTitle.textContent = 'Error';
+		resultIcon.textContent = '⚠️';
+		featuresList.innerHTML = `
+			<div class="feature-item">
+				<span style="color: rgba(255, 0, 132, 0.9);">⚠️</span>
+				<span class="feature-text">Error scanning URL: ${error.message}</span>
+			</div>
+		`;
+	}
+
+	// Report button click handler
+	reportButton.addEventListener('click', async () => {
 		try {
 			const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-			const url = tab.url;
-
-			chrome.runtime.sendMessage({ action: 'analyzeUrl', url }, response => {
-				updateUI(response);
-				
-				// Reset button state
-				scanButton.disabled = false;
-				scanButton.classList.remove('loading');
-				scanButton.innerHTML = '<span>Scan Current Page</span>';
+			const subject = encodeURIComponent('Report Suspicious Website');
+			const body = encodeURIComponent(`Suspicious URL: ${tab.url}\n\nThis website has been detected as potentially malicious by the URL Safety Scanner extension.`);
+			const mailtoUrl = `mailto:mpcyberpolice@gmail.com?subject=${subject}&body=${body}`;
+			
+			chrome.tabs.create({ url: mailtoUrl });
+			chrome.tabs.create({ url: 'https://cybercrime.gov.in/' });
+			
+			chrome.notifications.create('report_' + Date.now(), {
+				type: 'basic',
+				iconUrl: 'icons/icon128.png',
+				title: 'Report Initiated',
+				message: 'Opening email client and cyber crime portal to report the malicious website.'
 			});
 		} catch (error) {
-			console.error('Error:', error);
-			scanButton.disabled = false;
-			scanButton.classList.remove('loading');
-			scanButton.innerHTML = '<span>Scan Current Page</span>';
+			console.error('Error reporting website:', error);
 		}
 	});
 });
