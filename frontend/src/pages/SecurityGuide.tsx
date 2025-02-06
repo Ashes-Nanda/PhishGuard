@@ -169,7 +169,14 @@ const SecurityGuide: React.FC = () => {
     <Container maxW="container.lg" py={8}>
       <VStack spacing={8} align="stretch">
         <Box textAlign="center">
-          <Icon as={FaShieldAlt} w={12} h={12} color="primary.500" mb={4} />
+            <Icon 
+            as={FaShieldAlt} 
+            w={16} 
+            h={16} 
+            color="primary.400" 
+            mb={4} 
+            filter="drop-shadow(0 0 8px rgba(0, 255, 169, 0.3))" 
+            />
           <Heading
             as="h1"
             size="xl"
@@ -185,8 +192,15 @@ const SecurityGuide: React.FC = () => {
 
         <Box textAlign="center">
           <Button
-            leftIcon={<FaFlag />}
-            colorScheme="red"
+            leftIcon={
+              <Icon 
+              as={FaFlag} 
+              color="red.400" 
+              boxSize={5} 
+              filter="drop-shadow(0 0 4px rgba(245, 101, 101, 0.3))" 
+              />
+            }
+            variant="glass"
             size="lg"
             onClick={onOpen}
             mb={6}
@@ -197,18 +211,34 @@ const SecurityGuide: React.FC = () => {
 
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
           {phishingTactics.map((tactic, index) => (
-            <Card key={index}>
+            <Card 
+              key={index}
+              bg="glassDark"
+              borderColor="glassStroke"
+              backdropFilter="blur(10px)"
+              boxShadow="0 8px 32px rgba(0, 0, 0, 0.3)"
+              _hover={{
+              transform: 'translateY(-2px)',
+              boxShadow: '0 12px 48px rgba(0, 0, 0, 0.4)'
+              }}
+            >
               <CardBody>
-                <VStack align="start" spacing={3}>
-                  <Icon as={tactic.icon} w={6} h={6} color="primary.500" />
-                  <Heading size="md">{tactic.title}</Heading>
-                  <Text>{tactic.description}</Text>
-                  <List spacing={2}>
-                    {tactic.examples.map((example, i) => (
-                      <ListItem key={i}>
-                        <ListIcon as={FaExclamationTriangle} color="orange.500" />
-                        {example}
-                      </ListItem>
+              <VStack align="start" spacing={3}>
+                <Icon 
+                  as={tactic.icon} 
+                  w={6} 
+                  h={6} 
+                  color="primary.400" 
+                  filter="drop-shadow(0 0 4px rgba(0, 255, 169, 0.3))" 
+                />
+                <Heading size="md" color="whiteAlpha.900">{tactic.title}</Heading>
+                <Text color="whiteAlpha.800">{tactic.description}</Text>
+                <List spacing={2}>
+                {tactic.examples.map((example, i) => (
+                  <ListItem key={i} color="whiteAlpha.800">
+                  <ListIcon as={FaExclamationTriangle} color="orange.400" />
+                  {example}
+                  </ListItem>
                     ))}
                   </List>
                 </VStack>
@@ -218,22 +248,35 @@ const SecurityGuide: React.FC = () => {
         </SimpleGrid>
 
         <Accordion allowMultiple>
-          <AccordionItem>
-            <AccordionButton>
+            <AccordionItem
+            border="1px solid"
+            borderColor="glassStroke"
+            bg="glassDark"
+            borderRadius="xl"
+            mb={4}
+            >
+            <AccordionButton 
+              _hover={{ bg: 'whiteAlpha.100' }}
+              borderRadius="xl"
+            >
               <Box flex="1" textAlign="left">
-                <Heading size="md">Best Practices</Heading>
+              <Heading size="md" color="whiteAlpha.900">Best Practices</Heading>
               </Box>
-              <AccordionIcon />
+              <AccordionIcon color="whiteAlpha.900" />
             </AccordionButton>
             <AccordionPanel>
               <List spacing={4}>
-                {SECURITY_TIPS.map((tip, index) => (
-                  <ListItem key={index}>
-                    <HStack>
-                      <ListIcon as={FaCheckCircle} color="green.500" />
-                      <VStack align="start" spacing={0}>
-                        <Text fontWeight="bold">{tip.title}</Text>
-                        <Text>{tip.description}</Text>
+              {SECURITY_TIPS.map((tip, index) => (
+                <ListItem key={index}>
+                <HStack>
+                    <ListIcon 
+                    as={FaCheckCircle} 
+                    color="green.400" 
+                    filter="drop-shadow(0 0 4px rgba(56, 161, 105, 0.3))" 
+                    />
+                  <VStack align="start" spacing={0}>
+                  <Text fontWeight="bold" color="whiteAlpha.900">{tip.title}</Text>
+                  <Text color="whiteAlpha.800">{tip.description}</Text>
                       </VStack>
                     </HStack>
                   </ListItem>
@@ -256,13 +299,28 @@ const SecurityGuide: React.FC = () => {
                     <CardBody>
                       <VStack align="start" spacing={2}>
                         <HStack>
-                          <Icon as={FaBook} color="primary.500" />
+                            <Icon 
+                            as={FaBook} 
+                            color="primary.400" 
+                            filter="drop-shadow(0 0 4px rgba(0, 255, 169, 0.3))" 
+                            />
                           <Text fontWeight="bold">{resource.title}</Text>
                         </HStack>
                         <Text fontSize="sm" color="gray.600">{resource.description}</Text>
                         <Text fontSize="xs" color="gray.500">Type: {resource.type}</Text>
                         <Link href={resource.link} isExternal>
-                          <Button size="sm" rightIcon={<FaExternalLinkAlt />} variant="outline">
+                            <Button 
+                            size="sm" 
+                            rightIcon={
+                              <Icon 
+                              as={FaExternalLinkAlt} 
+                              color="secondary.400" 
+                              boxSize={4} 
+                              filter="drop-shadow(0 0 4px rgba(255, 0, 132, 0.3))" 
+                              />
+                            } 
+                            variant="outline"
+                            >
                             Learn More
                           </Button>
                         </Link>
@@ -277,17 +335,26 @@ const SecurityGuide: React.FC = () => {
 
         <Modal isOpen={isOpen} onClose={onClose} size="lg">
           <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Report Phishing Attempt</ModalHeader>
+            <ModalContent
+            bg="darkBg.800"
+            borderColor="glassStroke"
+            backdropFilter="blur(10px)"
+            >
+            <ModalHeader color="whiteAlpha.900">Report Phishing Attempt</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <VStack spacing={4}>
-                <FormControl isRequired>
-                  <FormLabel>Suspicious URL</FormLabel>
-                  <Input 
-                    placeholder="Enter the suspicious URL"
-                    value={reportForm.url}
-                    onChange={(e) => setReportForm({...reportForm, url: e.target.value})}
+              <FormControl isRequired>
+                <FormLabel color="whiteAlpha.900">Suspicious URL</FormLabel>
+                <Input 
+                placeholder="Enter the suspicious URL"
+                value={reportForm.url}
+                onChange={(e) => setReportForm({...reportForm, url: e.target.value})}
+                bg="darkBg.700"
+                borderColor="glassStroke"
+                color="whiteAlpha.900"
+                _hover={{ borderColor: "primary.400" }}
+                _focus={{ borderColor: "primary.400", boxShadow: "0 0 0 1px var(--chakra-colors-primary-400)" }}
                   />
                 </FormControl>
                 <FormControl isRequired>
@@ -310,10 +377,10 @@ const SecurityGuide: React.FC = () => {
               </VStack>
             </ModalBody>
             <ModalFooter>
-              <Button variant="ghost" mr={3} onClick={onClose}>
+                <Button variant="glass" mr={3} onClick={onClose}>
                 Cancel
-              </Button>
-              <Button colorScheme="red" onClick={handleReportSubmit}>
+                </Button>
+                <Button variant="glass" colorScheme="red" onClick={handleReportSubmit}>
                 Submit Report
               </Button>
             </ModalFooter>

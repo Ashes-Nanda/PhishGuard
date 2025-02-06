@@ -3,11 +3,54 @@ import { URL } from 'url';
 import { extract } from 'tld-extract';
 import { DateTime } from 'luxon';
 
+interface PredictionResult {
+    is_phishing: boolean;
+    confidence: number;
+    features: Record<string, boolean>;
+    whitelisted: boolean;
+    timestamp: string;
+    threat_level?: 'high' | 'medium' | 'low' | 'safe';
+}
+
+interface FeatureWeights {
+    has_ip_address: number;
+    long_url: number;
+    uses_shortener: number;
+    has_at_symbol: number;
+    has_double_slash: number;
+    has_prefix_suffix: number;
+    has_multiple_subdomains: number;
+    has_suspicious_keywords: number;
+    has_suspicious_tld: number;
+    has_numeric_subdomain: number;
+    has_random_subdomain: number;
+    no_ssl: number;
+    encoding_techniques: number;
+    typosquatting: number;
+    redirect_chains: number;
+}
+
 export class URLFeatureExtractor {
     private whitelist: Set<string>;
+    private readonly weights: FeatureWeights = {
+        has_ip_address: 3.0,
+        long_url: 1.0,
+        uses_shortener: 2.0,
+        has_at_symbol: 1.5,
+        has_double_slash: 1.5,
+        has_prefix_suffix: 1.0,
+        has_multiple_subdomains: 2.0,
+        has_suspicious_keywords: 2.5,
+        has_suspicious_tld: 2.5,
+        has_numeric_subdomain: 2.0,
+        has_random_subdomain: 2.0,
+        no_ssl: 2.5,
+        encoding_techniques: 2.0,
+        typosquatting: 2.5,
+        redirect_chains: 2.0
+    };
 
     constructor() {
-        // Initialize whitelist of known legitimate domains
         this.whitelist = new Set([
             'google.com', 'www.google.com',
             'microsoft.com', 'www.microsoft.com',
@@ -18,6 +61,64 @@ export class URLFeatureExtractor {
             'linkedin.com', 'www.linkedin.com',
             'github.com', 'www.github.com'
         ]);
+    }
+
+
+    private async checkAlexaRank(domain: string): Promise<number> {
+        try {
+            const response = await axios.get(`http://data.alexa.com/data?cli=10&url=${domain}`);
+            const rank = parseInt(response.data.match(/<REACH RANK="(\d+)"/)[1]);
+            return rank > 1000000 ? -1 : 1;
+        } catch {
+            return -1;
+        }
+    }
+
+    private checkEncodingTechniques(url: string): number {
+        const suspiciousEncoding = /%[0-9a-fA-F]{2}|\\x[0-9a-fA-F]{2}/;
+        return suspiciousEncoding.test(url) ? -1 : 1;
+    }
+
+    private checkTyposquatting(domain: string): number {
+        const commonTypos = {
+            'google': /g[o0]{2}gle/i,
+            'facebook': /faceb[o0]{2}k/i,
+            'microsoft': /micr[o0]s[o0]ft/i,
+            'apple': /[a@]pple/i,
+            'amazon': /amaz[o0]n/i
+        };
+
+        for (const [legitimate, pattern] of Object.entries(commonTypos)) {
+            if (pattern.test(domain) && domain !== legitimate) {
+                return -1;
+            }
+        }
+        return 1;
+    }
+
+    private async checkRedirectChains(url: string): Promise<number> {
+        try {
+            let redirectCount = 0;
+            let currentUrl = url;
+            
+            for (let i = 0; i < 5; i++) {
+                const response = await axios.head(currentUrl, {
+                    maxRedirects: 0,
+                    validateStatus: null
+                });
+                
+                if (response.status >= 300 && response.status < 400 && response.headers.location) {
+                    redirectCount++;
+                    currentUrl = response.headers.location;
+                } else {
+                    break;
+                }
+            }
+            
+            return redirectCount > 2 ? -1 : 1;
+        } catch {
+            return -1;
+        }
     }
 
     private have_ip_address(url: string): number {
@@ -68,60 +169,67 @@ export class URLFeatureExtractor {
                 timeout: 5000,
                 validateStatus: null
             });
-            return response.protocol === 'https:' ? 1 : -1;
+            return url.startsWith('https://') ? 1 : -1;
         } catch {
             return -1;
         }
     }
 
-    private extract_features(url: string): number[] {
-        const features = new Array(31).fill(0);
+    private async extract_features(url: string): Promise<number[]> {
+        const features = new Array(15).fill(0);
         
-        features[0] = this.have_ip_address(url);
-        features[1] = this.url_length(url);
-        features[2] = this.url_shortener(url);
-        features[3] = this.have_at_symbol(url);
-        features[4] = this.double_slash_redirect(url);
-        features[5] = this.prefix_suffix(url);
-        features[6] = this.have_subdomain(url);
+        try {
+            const urlObj = new URL(url);
+            const hostname = urlObj.hostname.toLowerCase();
+
+            features[0] = this.have_ip_address(url);
+            features[1] = this.url_length(url);
+            features[2] = this.url_shortener(url);
+            features[3] = this.have_at_symbol(url);
+            features[4] = this.double_slash_redirect(url);
+            features[5] = this.prefix_suffix(url);
+            features[6] = this.have_subdomain(url);
+            features[7] = /login|account|secure|verify|signin|security|update/i.test(hostname) ? -1 : 1;
+            features[8] = /.+\.(xyz|tk|ml|ga|cf|gq|pw)$/i.test(hostname) ? -1 : 1;
+            features[9] = /^[0-9-]+\./.test(hostname) ? -1 : 1;
+            features[10] = /^[a-z0-9]{8,}\./.test(hostname) ? -1 : 1;
+            features[11] = this.checkEncodingTechniques(url);
+            features[12] = this.checkTyposquatting(hostname);
+            features[13] = await this.checkRedirectChains(url);
+            features[14] = await this.check_ssl(url);
+        } catch (error) {
+            console.error('Feature extraction error:', error);
+            return features.map(() => -1); // Mark all features as suspicious on error
+        }
         
         return features;
+
     }
 
-    public async predict_url(url: string): Promise<any> {
+    public async predict_url(url: string): Promise<PredictionResult> {
         try {
-            // Normalize URL
             if (!url.startsWith('http')) {
                 url = 'http://' + url;
             }
 
-            // Parse URL
             const urlObj = new URL(url);
             const domain = urlObj.hostname.toLowerCase();
             const cleanDomain = domain.startsWith('www.') ? domain.slice(4) : domain;
 
-            // Check whitelist
             if (this.whitelist.has(cleanDomain) || this.whitelist.has(domain)) {
                 return {
                     is_phishing: false,
                     confidence: 1.0,
                     features: {},
-                    whitelisted: true
+                    whitelisted: true,
+                    timestamp: DateTime.now().toISO(),
+                    threat_level: 'safe'
                 };
             }
 
-            // Extract features
-            const features = this.extract_features(url);
-            const sslScore = await this.check_ssl(url);
-            features.push(sslScore);
-
-            // Calculate confidence score
-            const negativeFeatures = features.filter(f => f === -1).length;
-            const totalFeatures = features.filter(f => f !== 0).length;
-            const confidence = totalFeatures > 0 ? 
-                1 - (negativeFeatures / totalFeatures) : 0.5;
-
-            const activeFeatures = {
+            const features = await this.extract_features(url);
+            
+            const activeFeatures: Record<string, boolean> = {
                 has_ip_address: features[0] === -1,
                 long_url: features[1] === -1,
                 uses_shortener: features[2] === -1,
@@ -129,26 +237,52 @@ export class URLFeatureExtractor {
                 has_double_slash: features[4] === -1,
                 has_prefix_suffix: features[5] === -1,
                 has_multiple_subdomains: features[6] === -1,
-                no_ssl: sslScore === -1
+                has_suspicious_keywords: features[7] === -1,
+                has_suspicious_tld: features[8] === -1,
+                has_numeric_subdomain: features[9] === -1,
+                has_random_subdomain: features[10] === -1,
+                encoding_techniques: features[11] === -1,
+                typosquatting: features[12] === -1,
+                redirect_chains: features[13] === -1,
+                no_ssl: features[14] === -1
             };
 
+            let weightedNegativeScore = 0;
+            let totalWeight = 0;
+
+            Object.entries(activeFeatures).forEach(([feature, isNegative]) => {
+                const weight = this.weights[feature as keyof FeatureWeights];
+                if (isNegative) weightedNegativeScore += weight;
+                totalWeight += weight;
+            });
+
+            const confidence = totalWeight > 0 ? 
+                1 - (weightedNegativeScore / totalWeight) : 0.5;
+
+            const threat_level = confidence < 0.5 ? 'high' :
+                               confidence < 0.7 ? 'medium' :
+                               confidence < 0.85 ? 'low' : 'safe';
+
             return {
-                is_phishing: confidence < 0.6,
-                confidence: confidence,
+                is_phishing: confidence < 0.75,
+                confidence,
                 features: activeFeatures,
                 whitelisted: false,
-                timestamp: DateTime.now().toISO()
+                timestamp: DateTime.now().toISO(),
+                threat_level
             };
 
         } catch (error) {
             console.error('Prediction error:', error);
             return {
-                is_phishing: false,
+                is_phishing: true,
                 confidence: 0.0,
                 features: {},
                 whitelisted: false,
-                timestamp: DateTime.now().toISO()
+                timestamp: DateTime.now().toISO(),
+                threat_level: 'high'
             };
         }
+
     }
 } 

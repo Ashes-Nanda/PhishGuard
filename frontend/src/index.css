@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--primary-glow: rgba(0, 255, 169, 0.15);
+	--secondary-glow: rgba(255, 0, 132, 0.15);
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	padding-top: env(safe-area-inset-top);
+}
+
+.bg-glassDark {
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.border-glassStroke {
+	border-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 100;
+	backdrop-filter: blur(8px);
+	background: rgba(0, 0, 0, 0.3);
+	padding: 1rem 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.navbar-inner {
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 1rem;
+	display: flex;
+	justify-content: center;
+}

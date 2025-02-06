@@ -149,7 +149,10 @@ const floatingButtonStyles = {
   bottom: '2rem',
   right: '2rem',
   zIndex: 10,
-  boxShadow: 'lg',
+  bg: 'glassDark',
+  backdropFilter: 'blur(10px)',
+  borderWidth: '1px',
+  borderColor: 'glassStroke',
   borderRadius: 'full',
   width: '60px',
   height: '60px',
@@ -158,8 +161,10 @@ const floatingButtonStyles = {
   justifyContent: 'center',
   cursor: 'pointer',
   transition: 'all 0.2s',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
   _hover: {
     transform: 'scale(1.1)',
+    boxShadow: '0 6px 16px rgba(0, 0, 0, 0.4)',
   },
   _active: {
     transform: 'scale(0.95)',
@@ -676,7 +681,13 @@ export const URLScanner: React.FC = () => {
   const EducationalModal = () => (
     <Modal isOpen={showEducation} onClose={() => setShowEducation(false)} size="xl">
       <ModalOverlay />
-      <ModalContent>
+        <ModalContent
+        bg="darkBg.800"
+        borderWidth="1px"
+        borderColor="glassStroke"
+        backdropFilter="blur(10px)"
+        boxShadow="0 8px 32px rgba(0, 0, 0, 0.4)"
+        >
         <ModalHeader>Security Analysis & Tips</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
@@ -741,19 +752,28 @@ export const URLScanner: React.FC = () => {
   );
 
   const SecurityDisclaimer: React.FC = () => (
-    <Alert status="info" variant="left-accent" mt={4} borderRadius="md">
+    <Alert 
+      status="info" 
+      variant="left-accent" 
+      mt={4} 
+      borderRadius="xl"
+      bg="glassDark"
+      backdropFilter="blur(10px)"
+      borderWidth="1px"
+      borderColor="glassStroke"
+    >
       <AlertIcon />
       <Box>
-        <AlertTitle>Important Security Notice</AlertTitle>
-        <AlertDescription>
+        <AlertTitle color="whiteAlpha.900">Important Security Notice</AlertTitle>
+        <AlertDescription color="whiteAlpha.800">
           <Text fontSize="sm">
             While our scanner uses multiple security databases and analysis techniques, new threats emerge constantly. 
             A "safe" result doesn't guarantee 100% safety. Always:
           </Text>
           <List spacing={2} mt={2} fontSize="sm">
             <ListItem>
-              <ListIcon as={FaCheckCircle} color="green.500" />
-              Double-check the URL spelling and domain
+              <ListIcon as={FaCheckCircle} color="primary.400" />
+              <Text as="span" color="whiteAlpha.800">Double-check the URL spelling and domain</Text>
             </ListItem>
             <ListItem>
               <ListIcon as={FaCheckCircle} color="green.500" />
@@ -776,15 +796,21 @@ export const URLScanner: React.FC = () => {
   const BadgeModal = () => (
     <Modal isOpen={showBadgeModal} onClose={() => setShowBadgeModal(false)}>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg="darkBg.800"
+        borderWidth="1px"
+        borderColor="glassStroke"
+        backdropFilter="blur(10px)"
+        boxShadow="0 8px 32px rgba(0, 0, 0, 0.4)"
+      >
         <ModalHeader>New Badge Earned! 🎉</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
           {newBadge && (
             <VStack spacing={4} align="center">
-              <Icon as={newBadge.icon} w={16} h={16} color="yellow.400" />
-              <Heading size="md">{newBadge.name}</Heading>
-              <Text>{newBadge.description}</Text>
+              <Icon as={newBadge.icon} w={16} h={16} color="primary.400" />
+              <Heading size="md" color="whiteAlpha.900">{newBadge.name}</Heading>
+              <Text color="whiteAlpha.800">{newBadge.description}</Text>
             </VStack>
           )}
         </ModalBody>
@@ -795,50 +821,77 @@ export const URLScanner: React.FC = () => {
   const CyberCellReportModal = () => (
     <Modal isOpen={showCyberCellModal} onClose={() => setShowCyberCellModal(false)} size="xl">
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent
+        bg="darkBg.800"
+        borderWidth="1px"
+        borderColor="glassStroke"
+        backdropFilter="blur(10px)"
+        boxShadow="0 8px 32px rgba(0, 0, 0, 0.4)"
+      >
         <ModalHeader>
           <HStack spacing={2}>
-            <Icon as={FaShieldAlt} color="blue.500" />
-            <Text>Report to MP Cyber Cell</Text>
+            <Icon as={FaShieldAlt} color="primary.400" />
+            <Text color="whiteAlpha.900">Report to MP Cyber Cell</Text>
           </HStack>
         </ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
           <VStack spacing={4}>
-            <Alert status="info">
+            <Alert 
+              status="info" 
+              bg="glassDark"
+              backdropFilter="blur(10px)"
+              borderWidth="1px"
+              borderColor="glassStroke"
+            >
               <AlertIcon />
               <Box>
-                <AlertTitle>Important Notice</AlertTitle>
-                <AlertDescription>
+                <AlertTitle color="whiteAlpha.900">Important Notice</AlertTitle>
+                <AlertDescription color="whiteAlpha.800">
                   This report will be sent directly to the MP Police Cyber Cell. False reporting is a punishable offense.
                 </AlertDescription>
               </Box>
             </Alert>
 
             <FormControl>
-              <FormLabel>Reporter Name (Optional)</FormLabel>
+              <FormLabel color="whiteAlpha.900">Reporter Name (Optional)</FormLabel>
               <Input
                 placeholder="Your name"
                 value={reporterInfo.name}
                 onChange={(e) => setReporterInfo({...reporterInfo, name: e.target.value})}
+                bg="darkBg.700"
+                borderColor="glassStroke"
+                color="whiteAlpha.900"
+                _hover={{ borderColor: "primary.400" }}
+                _focus={{ borderColor: "primary.400", boxShadow: "0 0 0 1px var(--chakra-colors-primary-400)" }}
               />
             </FormControl>
 
             <FormControl>
-              <FormLabel>Contact Information (Optional)</FormLabel>
+              <FormLabel color="whiteAlpha.900">Contact Information (Optional)</FormLabel>
               <Input
-                placeholder="Phone or email"
-                value={reporterInfo.contact}
-                onChange={(e) => setReporterInfo({...reporterInfo, contact: e.target.value})}
+              placeholder="Phone or email"
+              value={reporterInfo.contact}
+              onChange={(e) => setReporterInfo({...reporterInfo, contact: e.target.value})}
+              bg="darkBg.700"
+              borderColor="glassStroke"
+              color="whiteAlpha.900"
+              _hover={{ borderColor: "primary.400" }}
+              _focus={{ borderColor: "primary.400", boxShadow: "0 0 0 1px var(--chakra-colors-primary-400)" }}
               />
             </FormControl>
 
             <FormControl>
-              <FormLabel>Location (Optional)</FormLabel>
+              <FormLabel color="whiteAlpha.900">Location (Optional)</FormLabel>
               <Input
-                placeholder="Your city/district"
-                value={reporterInfo.location}
-                onChange={(e) => setReporterInfo({...reporterInfo, location: e.target.value})}
+              placeholder="Your city/district"
+              value={reporterInfo.location}
+              onChange={(e) => setReporterInfo({...reporterInfo, location: e.target.value})}
+              bg="darkBg.700"
+              borderColor="glassStroke"
+              color="whiteAlpha.900"
+              _hover={{ borderColor: "primary.400" }}
+              _focus={{ borderColor: "primary.400", boxShadow: "0 0 0 1px var(--chakra-colors-primary-400)" }}
               />
             </FormControl>
 
@@ -859,16 +912,27 @@ export const URLScanner: React.FC = () => {
   const AnonymousTipModal = () => (
     <Modal isOpen={showAnonymousTipModal} onClose={() => setShowAnonymousTipModal(false)} size="xl">
       <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Submit Anonymous Tip</ModalHeader>
+      <ModalContent
+        bg="darkBg.800"
+        borderWidth="1px"
+        borderColor="glassStroke"
+        backdropFilter="blur(10px)"
+        boxShadow="0 8px 32px rgba(0, 0, 0, 0.4)"
+      >
+        <ModalHeader color="whiteAlpha.900">Submit Anonymous Tip</ModalHeader>
         <ModalCloseButton />
         <ModalBody pb={6}>
           <VStack spacing={4}>
             <FormControl>
-              <FormLabel>Type of Threat</FormLabel>
+              <FormLabel color="whiteAlpha.900">Type of Threat</FormLabel>
               <Select
                 value={anonymousTip.tip_type}
                 onChange={(e) => setAnonymousTip({...anonymousTip, tip_type: e.target.value})}
+                bg="darkBg.700"
+                borderColor="glassStroke"
+                color="whiteAlpha.900"
+                _hover={{ borderColor: "primary.400" }}
+                _focus={{ borderColor: "primary.400", boxShadow: "0 0 0 1px var(--chakra-colors-primary-400)" }}
               >
                 <option value="URL">Suspicious URL</option>
                 <option value="SMS">Suspicious SMS</option>
@@ -878,26 +942,36 @@ export const URLScanner: React.FC = () => {
             </FormControl>
 
             <FormControl>
-              <FormLabel>Threat Details</FormLabel>
+              <FormLabel color="whiteAlpha.900">Threat Details</FormLabel>
               <Textarea
                 placeholder="Describe the suspicious activity..."
                 value={anonymousTip.content}
                 onChange={(e) => setAnonymousTip({...anonymousTip, content: e.target.value})}
+                bg="darkBg.700"
+                borderColor="glassStroke"
+                color="whiteAlpha.900"
+                _hover={{ borderColor: "primary.400" }}
+                _focus={{ borderColor: "primary.400", boxShadow: "0 0 0 1px var(--chakra-colors-primary-400)" }}
               />
             </FormControl>
 
             <FormControl>
-              <FormLabel>Additional Information</FormLabel>
+              <FormLabel color="whiteAlpha.900">Additional Information</FormLabel>
               <Textarea
                 placeholder="Any additional details that might help..."
                 value={anonymousTip.additional_details || ''}
                 onChange={(e) => setAnonymousTip({...anonymousTip, additional_details: e.target.value})}
+                bg="darkBg.700"
+                borderColor="glassStroke"
+                color="whiteAlpha.900"
+                _hover={{ borderColor: "primary.400" }}
+                _focus={{ borderColor: "primary.400", boxShadow: "0 0 0 1px var(--chakra-colors-primary-400)" }}
               />
             </FormControl>
 
             <Button
               leftIcon={<Icon as={FaUserSecret} />}
-              colorScheme="purple"
+              variant="glass"
               onClick={handleAnonymousTip}
               w="full"
             >
@@ -965,22 +1039,36 @@ export const URLScanner: React.FC = () => {
   const LoadingStates = () => (
     <VStack spacing={2} align="stretch" w="full">
       {isQuickScanning && (
-        <Box>
-          <Text fontSize="sm" color="gray.600" mb={2}>Quick Security Check...</Text>
-          <Progress size="xs" isIndeterminate colorScheme="blue" />
+        <Box
+          p={4}
+          bg="glassDark"
+          backdropFilter="blur(10px)"
+          borderRadius="xl"
+          borderWidth="1px"
+          borderColor="glassStroke"
+        >
+          <Text fontSize="sm" color="whiteAlpha.800" mb={2}>Quick Security Check...</Text>
+          <Progress size="xs" isIndeterminate colorScheme="primary" />
         </Box>
       )}
       {isScanning && !isQuickScanning && (
-        <Box>
-          <Text fontSize="sm" color="gray.600" mb={2}>Performing Deep Scan...</Text>
+        <Box
+          p={4}
+          bg="glassDark"
+          backdropFilter="blur(10px)"
+          borderRadius="xl"
+          borderWidth="1px"
+          borderColor="glassStroke"
+        >
+          <Text fontSize="sm" color="whiteAlpha.800" mb={2}>Performing Deep Scan...</Text>
           <Progress 
             size="xs" 
             isIndeterminate 
             colorScheme="primary"
           />
           <HStack justify="center" spacing={2} mt={2}>
-            <Spinner size="sm" color="primary.500" />
-            <Text fontSize="sm" color="gray.600">
+            <Spinner size="sm" color="primary.400" />
+            <Text fontSize="sm" color="whiteAlpha.800">
               Analyzing security databases...
             </Text>
           </HStack>
@@ -990,51 +1078,67 @@ export const URLScanner: React.FC = () => {
   );
 
   return (
-    <Container maxW="container.md" py={8}>
+    <Container maxW="container.md" py={8} position="relative" zIndex={1}>
       <VStack spacing={8}>
-        <Box textAlign="center">
-          <Box as="span">
-            <Icon as={FaShieldAlt} w={12} h={12} color="primary.500" mb={4} />
-          </Box>
+        <Box textAlign="center" position="relative">
+          <Icon
+            as={FaShieldAlt}
+            w={16}
+            h={16}
+            color="primary.400"
+            mb={4}
+            filter="drop-shadow(0 0 8px rgba(0, 255, 169, 0.3))"
+          />
           <Heading
             as="h1"
             size="xl"
-            bgGradient="linear(to-r, primary.500, secondary.500)"
+            bgGradient="linear(to-r, primary.400, secondary.400)"
             bgClip="text"
             letterSpacing="tight"
+            mb={3}
           >
             URL Security Scanner
           </Heading>
-          <Text color="gray.600" mt={2}>
+          <Text color="whiteAlpha.900" fontSize="lg">
             Check if a URL is safe before visiting
           </Text>
         </Box>
 
         <Box
           w="full"
-          bg="white"
+          bg="glassDark"
           borderRadius="xl"
-          boxShadow="xl"
+          borderWidth="1px"
+          borderColor="glassStroke"
           p={6}
-          borderWidth={1}
-          borderColor="gray.100"
+          backdropFilter="blur(10px)"
+          boxShadow="0 8px 32px rgba(0, 0, 0, 0.3)"
+          transition="all 0.2s"
+          _hover={{
+          boxShadow: "0 12px 48px rgba(0, 0, 0, 0.4)"
+          }}
         >
           <VStack spacing={4}>
             <HStack w="full">
-              <Input
+                <Input
                 type="url"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="Enter URL to scan..."
                 size="lg"
-                borderRadius="lg"
-                borderWidth={2}
+                bg="darkBg.800"
+                color="whiteAlpha.900"
+                borderWidth="1px"
+                borderColor="glassStroke"
+                _hover={{
+                  borderColor: "primary.400"
+                }}
                 _focus={{
-                  borderColor: 'primary.500',
-                  boxShadow: '0 0 0 1px var(--chakra-colors-primary-500)',
+                  borderColor: "primary.400",
+                  boxShadow: "0 0 0 1px var(--chakra-colors-primary-400)"
                 }}
                 disabled={isScanning || isQuickScanning}
-              />
+                />
               <Tooltip label="Enter the complete URL including http:// or https://">
                 <Box as="span">
                   <Icon as={FaInfoCircle} color="gray.400" w={5} h={5} />
@@ -1046,22 +1150,22 @@ export const URLScanner: React.FC = () => {
               onClick={handleScan}
               isLoading={isScanning || isQuickScanning}
               loadingText={isQuickScanning ? "Quick Scan..." : "Deep Scan..."}
-              variant="primary"
+              variant="glass"
               size="lg"
               w="full"
               leftIcon={
-                <Box as="span">
-                  <Icon
-                    as={FaShieldAlt}
-                    animation={
-                      (isScanning || isQuickScanning) 
-                        ? `${pulseAnimation} 1.5s infinite` 
-                        : 'none'
-                    }
-                  />
-                </Box>
+              <Icon
+                as={FaShieldAlt}
+                color="primary.400"
+                animation={
+                (isScanning || isQuickScanning) 
+                  ? `${pulseAnimation} 1.5s infinite`
+                  : 'none'
+                }
+              />
               }
             >
+
               Scan URL
             </Button>
 
@@ -1097,7 +1201,7 @@ export const URLScanner: React.FC = () => {
             w="full"
           >
             <VStack spacing={4} w="full">
-              <Alert
+                <Alert
                 status={scanResult.isSafe ? 'success' : 'error'}
                 variant="subtle"
                 flexDirection="column"
@@ -1106,7 +1210,11 @@ export const URLScanner: React.FC = () => {
                 textAlign="center"
                 borderRadius="xl"
                 p={6}
-              >
+                bg={scanResult.isSafe ? 'rgba(56, 161, 105, 0.1)' : 'rgba(245, 101, 101, 0.1)'}
+                backdropFilter="blur(10px)"
+                borderWidth="1px"
+                borderColor="glassStroke"
+                >
                 <AlertIcon boxSize="40px" mr={0} />
                 <AlertTitle mt={4} mb={1} fontSize="lg">
                   {scanResult.whitelisted ? 'Verified Safe Domain' : 
@@ -1115,164 +1223,204 @@ export const URLScanner: React.FC = () => {
                 <AlertDescription maxWidth="sm">
                   <Text mb={4}>{scanResult.message}</Text>
                   
-                  <VStack spacing={2} mb={4}>
+                    <VStack spacing={2} mb={4}>
                     <Badge 
-                      colorScheme={
-                        scanResult.whitelisted ? 'green' :
-                        scanResult.confidence >= 0.8 ? 'green' : 
-                        scanResult.confidence >= 0.6 ? 'yellow' : 'red'
-                      }
-                      p={2}
-                      borderRadius="md"
+                      p={3}
+                      borderRadius="xl"
                       fontSize="md"
+                      bg={scanResult.isSafe ? 'rgba(56, 161, 105, 0.2)' : 'rgba(245, 101, 101, 0.2)'}
+                      color={scanResult.isSafe ? 'green.300' : 'red.300'}
+                      borderWidth="1px"
+                      borderColor={scanResult.isSafe ? 'green.400' : 'red.400'}
+                      boxShadow={`0 0 10px ${scanResult.isSafe ? 'rgba(56, 161, 105, 0.2)' : 'rgba(245, 101, 101, 0.2)'}`}
                     >
-                      Overall Safety Score: {formatConfidenceScore(scanResult.confidence)}
+                      <HStack spacing={2}>
+                      <Icon 
+                        as={scanResult.isSafe ? FaCheckCircle : FaExclamationTriangle} 
+                        color={scanResult.isSafe ? 'green.400' : 'red.400'}
+                        boxSize={5}
+                        filter={`drop-shadow(0 0 4px ${scanResult.isSafe ? 'rgba(56, 161, 105, 0.3)' : 'rgba(245, 101, 101, 0.3)'})`}
+                      />
+                      <Text fontWeight="bold">
+                        Overall Safety Score: {formatConfidenceScore(scanResult.confidence)}
+                      </Text>
+                      </HStack>
                     </Badge>
-                    
-                    <HStack spacing={4} fontSize="sm">
-                      <Tooltip label="Machine Learning model confidence">
-                        <Badge colorScheme="blue">
-                          ML Score: {formatConfidenceScore(scanResult.mlConfidence)}
-                        </Badge>
-                      </Tooltip>
-                      
-                      <Tooltip label="VirusTotal security vendors confidence">
-                        <Badge colorScheme="purple">
-                          VT Score: {formatConfidenceScore(scanResult.vtConfidence)}
-                        </Badge>
-                      </Tooltip>
-                    </HStack>
-                  </VStack>
 
-                  {scanResult.lastSeen && (
-                    <Text fontSize="sm" color="gray.600" mb={4}>
+                    <HStack spacing={4}>
+                      <Badge 
+                      p={2}
+                      borderRadius="lg"
+                      bg="rgba(66, 153, 225, 0.2)"
+                      color="blue.300"
+                      borderWidth="1px"
+                      borderColor="blue.400"
+                      boxShadow="0 0 8px rgba(66, 153, 225, 0.2)"
+                      >
+                      <HStack>
+                        <Icon as={FaRobot} color="blue.400" />
+                        <Text>ML Score: {formatConfidenceScore(scanResult.mlConfidence)}</Text>
+                      </HStack>
+                      </Badge>
+
+                      <Badge 
+                      p={2}
+                      borderRadius="lg"
+                      bg="rgba(159, 122, 234, 0.2)"
+                      color="purple.300"
+                      borderWidth="1px"
+                      borderColor="purple.400"
+                      boxShadow="0 0 8px rgba(159, 122, 234, 0.2)"
+                      >
+                      <HStack>
+                        <Icon as={FaShieldAlt} color="purple.400" />
+                        <Text>VT Score: {formatConfidenceScore(scanResult.vtConfidence)}</Text>
+                      </HStack>
+                      </Badge>
+                    </HStack>
+                    </VStack>
+
+                    {scanResult.lastSeen && (
+                    <Text fontSize="sm" color="whiteAlpha.600" mb={4}>
                       First seen: {new Date(scanResult.lastSeen).toLocaleDateString()}
                     </Text>
-                  )}
+                    )}
 
-                  {scanResult.domainAge && (
-                    <Text fontSize="sm" color="gray.600" mb={4}>
+                    {scanResult.domainAge && (
+                    <Text fontSize="sm" color="whiteAlpha.600" mb={4}>
                       Domain age: {scanResult.domainAge}
                     </Text>
-                  )}
+                    )}
 
-                  {scanResult.threats.length > 0 && (
-                    <VStack mt={4} spacing={2} align="start">
-                      <Text fontWeight="bold">Detected Threats:</Text>
+                    {scanResult.threats.length > 0 && (
+                    <VStack mt={4} spacing={2} align="start" w="full">
+                      <Text fontWeight="bold" color="whiteAlpha.900">Detected Threats:</Text>
                       {scanResult.threats.map((threat, index) => (
-                        <HStack key={index} color="red.600">
-                          <Icon as={FaExclamationTriangle} />
-                          <Text>{threat}</Text>
-                        </HStack>
+                      <HStack 
+                        key={index} 
+                        w="full"
+                        p={4}
+                        bg="rgba(245, 101, 101, 0.1)"
+                        borderRadius="xl"
+                        borderWidth="1px"
+                        borderColor="red.400"
+                        backdropFilter="blur(10px)"
+                      >
+                        <Icon 
+                        as={FaExclamationTriangle} 
+                        color="red.400" 
+                        boxSize={5}
+                        filter="drop-shadow(0 0 4px rgba(245, 101, 101, 0.3))"
+                        />
+                        <Text color="whiteAlpha.900">{threat}</Text>
+                      </HStack>
                       ))}
                     </VStack>
-                  )}
+                    )}
 
-                  <Box mt={4} p={4} bg="gray.50" borderRadius="md">
-                    <Text fontWeight="bold" mb={2}>Additional Safety Checks:</Text>
-                    <List spacing={2}>
+                    <Box mt={4} p={4} bg="glassDark" borderRadius="xl" borderWidth="1px" borderColor="glassStroke">
+                    <Text fontWeight="bold" mb={2} color="whiteAlpha.900">Additional Safety Checks:</Text>
+                    <List spacing={3}>
                       <ListItem>
-                        <HStack>
-                          <Icon as={FaShieldAlt} color="blue.500" />
-                          <Text fontSize="sm">Verify the domain matches the expected website</Text>
-                        </HStack>
+                      <HStack spacing={3} align="center">
+                        <Icon as={FaShieldAlt} color="primary.400" boxSize={5} />
+                        <Text fontSize="sm" color="whiteAlpha.900">Verify the domain matches the expected website</Text>
+                      </HStack>
                       </ListItem>
                       <ListItem>
-                        <HStack>
-                          <Icon as={FaLock} color="blue.500" />
-                          <Text fontSize="sm">Check for HTTPS and valid certificate</Text>
-                        </HStack>
+                      <HStack spacing={3} align="center">
+                        <Icon as={FaLock} color="secondary.400" boxSize={5} />
+                        <Text fontSize="sm" color="whiteAlpha.900">Check for HTTPS and valid certificate</Text>
+                      </HStack>
                       </ListItem>
                       <ListItem>
-                        <HStack>
-                          <Icon as={FaExclamationTriangle} color="blue.500" />
-                          <Text fontSize="sm">Be cautious if the site requests sensitive information</Text>
-                        </HStack>
+                      <HStack spacing={3} align="center">
+                        <Icon as={FaExclamationTriangle} color="orange.400" boxSize={5} />
+                        <Text fontSize="sm" color="whiteAlpha.900">Be cautious if the site requests sensitive information</Text>
+                      </HStack>
                       </ListItem>
                     </List>
-                  </Box>
+                    </Box>
 
                   <Divider my={4} />
 
                   <HStack spacing={4} mt={4}>
                     <Tooltip label="Copy URL">
                       <IconButton
-                        aria-label="Copy URL"
-                        icon={<FaCopy />}
-                        onClick={handleCopy}
-                        size="sm"
-                        variant="ghost"
+                      aria-label="Copy URL"
+                      icon={<Icon as={FaCopy} color="primary.400" boxSize={5} filter="drop-shadow(0 0 4px rgba(0, 255, 169, 0.3))" />}
+                      onClick={handleCopy}
+                      size="sm"
+                      variant="glass"
                       />
                     </Tooltip>
                     
                     <Tooltip label="Share Results">
                       <IconButton
-                        aria-label="Share Results"
-                        icon={<FaShare />}
-                        onClick={handleShare}
-                        size="sm"
-                        variant="ghost"
+                      aria-label="Share Results"
+                      icon={<Icon as={FaShare} color="secondary.400" boxSize={5} filter="drop-shadow(0 0 4px rgba(255, 0, 132, 0.3))" />}
+                      onClick={handleShare}
+                      size="sm"
+                      variant="glass"
                       />
                     </Tooltip>
                     
                     <Tooltip label="Rescan URL">
                       <IconButton
-                        aria-label="Rescan URL"
-                        icon={<FaRedoAlt />}
-                        onClick={handleRescan}
-                        size="sm"
-                        variant="ghost"
-                        isLoading={isScanning}
+                      aria-label="Rescan URL"
+                      icon={<Icon as={FaRedoAlt} color="green.400" boxSize={5} filter="drop-shadow(0 0 4px rgba(56, 161, 105, 0.3))" />}
+                      onClick={handleRescan}
+                      size="sm"
+                      variant="glass"
+                      isLoading={isScanning}
                       />
                     </Tooltip>
                     
                     <Tooltip label="View Scan History">
                       <IconButton
-                        onClick={() => navigate('/history')}
-                        aria-label="View History"
-                        icon={<FaHistory />}
-                        size="sm"
-                        variant="ghost"
+                      onClick={() => navigate('/history')}
+                      aria-label="View History"
+                      icon={<Icon as={FaHistory} color="blue.400" boxSize={5} filter="drop-shadow(0 0 4px rgba(66, 153, 225, 0.3))" />}
+                      size="sm"
+                      variant="glass"
                       />
                     </Tooltip>
 
                     <Tooltip label="Report False Positive">
                       <IconButton
-                        aria-label="Report False Positive"
-                        icon={<FaFlag />}
-                        onClick={() => setShowReportModal(true)}
-                        size="sm"
-                        variant="ghost"
-                        colorScheme="red"
+                      aria-label="Report False Positive"
+                      icon={<Icon as={FaFlag} color="red.400" boxSize={5} filter="drop-shadow(0 0 4px rgba(245, 101, 101, 0.3))" />}
+                      onClick={() => setShowReportModal(true)}
+                      size="sm"
+                      variant="glass"
                       />
                     </Tooltip>
 
                     <Tooltip label="Report to MP Cyber Cell">
                       <IconButton
-                        aria-label="Report to Cyber Cell"
-                        icon={<FaShieldAlt />}
-                        onClick={() => setShowCyberCellModal(true)}
-                        size="sm"
-                        variant="ghost"
-                        colorScheme="blue"
+                      aria-label="Report to Cyber Cell"
+                      icon={<Icon as={FaShieldAlt} color="yellow.400" boxSize={5} filter="drop-shadow(0 0 4px rgba(236, 201, 75, 0.3))" />}
+                      onClick={() => setShowCyberCellModal(true)}
+                      size="sm"
+                      variant="glass"
                       />
                     </Tooltip>
 
                     <Tooltip label="Submit Anonymous Tip">
                       <IconButton
-                        aria-label="Submit Anonymous Tip"
-                        icon={<FaUserSecret />}
-                        onClick={() => setShowAnonymousTipModal(true)}
-                        size="sm"
-                        variant="ghost"
-                        colorScheme="purple"
+                      aria-label="Submit Anonymous Tip"
+                      icon={<Icon as={FaUserSecret} color="purple.400" boxSize={5} filter="drop-shadow(0 0 4px rgba(159, 122, 234, 0.3))" />}
+                      onClick={() => setShowAnonymousTipModal(true)}
+                      size="sm"
+                      variant="glass"
                       />
                     </Tooltip>
+
                   </HStack>
 
-                  <Text fontSize="sm" color="gray.500" mt={4}>
+                    <Text fontSize="sm" color="whiteAlpha.600" mt={4}>
                     Scanned at: {formatScanDate(scanResult.timestamp!)}
-                  </Text>
+                    </Text>
                 </AlertDescription>
               </Alert>
 
@@ -1288,17 +1436,33 @@ export const URLScanner: React.FC = () => {
                 </Alert>
               )}
 
-              <Box w="full" p={4} bg="gray.50" borderRadius="md">
-                <Heading size="sm" mb={4}>Your Security Badges</Heading>
+                <Box 
+                w="full" 
+                p={4} 
+                bg="glassDark"
+                backdropFilter="blur(10px)"
+                borderRadius="xl"
+                borderWidth="1px"
+                borderColor="glassStroke"
+                >
+                <Heading size="sm" mb={4} color="whiteAlpha.900">Your Security Badges</Heading>
                 <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4}>
                   {userBadges.map((badge) => (
-                    <VStack
-                      key={badge.id}
-                      p={3}
-                      bg={badge.earned ? 'green.50' : 'gray.100'}
-                      borderRadius="md"
-                      opacity={badge.earned ? 1 : 0.6}
-                    >
+                  <VStack
+                    key={badge.id}
+                    p={3}
+                    bg={badge.earned ? 'rgba(56, 161, 105, 0.1)' : 'rgba(255, 255, 255, 0.05)'}
+                    backdropFilter="blur(10px)"
+                    borderRadius="xl"
+                    borderWidth="1px"
+                    borderColor="glassStroke"
+                    opacity={badge.earned ? 1 : 0.6}
+                    transition="all 0.2s"
+                    _hover={{
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+                    }}
+                  >
                       <Icon
                         as={badge.icon}
                         w={6}
@@ -1353,71 +1517,80 @@ export const URLScanner: React.FC = () => {
 };
 
 const ThreatDetails: React.FC<{ result: ScanResult }> = ({ result }) => {
-  const getSeverityColor = (severity: string) => {
-    switch (severity.toLowerCase()) {
-      case 'critical':
-        return 'red.500';
-      case 'high':
-        return 'orange.500';
-      case 'medium':
-        return 'yellow.500';
-      case 'low':
-        return 'green.500';
-      default:
-        return 'gray.500';
-    }
-  };
-
   return (
     <VStack spacing={4} align="stretch" w="100%">
       <Box>
-        <Heading size="md" mb={2}>Threat Analysis</Heading>
+        <Heading size="md" mb={2} color="whiteAlpha.900">Threat Analysis</Heading>
         <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
-          <Box p={4} borderRadius="md" borderWidth="1px">
-            <Heading size="sm" mb={2}>ML Model Confidence</Heading>
+          <Box 
+            p={4} 
+            borderRadius="xl" 
+            borderWidth="1px"
+            bg="glassDark"
+            backdropFilter="blur(10px)"
+            borderColor="glassStroke"
+          >
+            <Heading size="sm" mb={2} color="whiteAlpha.900">ML Model Confidence</Heading>
             <Progress
               value={result.mlConfidence * 100}
               colorScheme={result.mlConfidence > 0.8 ? "red" : result.mlConfidence > 0.5 ? "yellow" : "green"}
               size="lg"
               borderRadius="md"
             />
-            <Text mt={2} fontSize="sm">
+            <Text mt={2} fontSize="sm" color="whiteAlpha.800">
               {(result.mlConfidence * 100).toFixed(1)}% confidence in prediction
             </Text>
           </Box>
-          <Box p={4} borderRadius="md" borderWidth="1px">
-            <Heading size="sm" mb={2}>Detection Summary</Heading>
+          <Box 
+            p={4} 
+            borderRadius="xl" 
+            borderWidth="1px"
+            bg="glassDark"
+            backdropFilter="blur(10px)"
+            borderColor="glassStroke"
+          >
+            <Heading size="sm" mb={2} color="whiteAlpha.900">Detection Summary</Heading>
             <SimpleGrid columns={2} spacing={2}>
-              <Text>Phishing:</Text>
-              <Text>{result.detectionCount.phishing}</Text>
-              <Text>Malware:</Text>
-              <Text>{result.detectionCount.malware}</Text>
-              <Text>Suspicious:</Text>
-              <Text>{result.detectionCount.suspicious}</Text>
-              <Text>Malicious:</Text>
-              <Text>{result.detectionCount.malicious}</Text>
+              <Text color="whiteAlpha.800">Phishing:</Text>
+              <Text color="whiteAlpha.900">{result.detectionCount.phishing}</Text>
+              <Text color="whiteAlpha.800">Malware:</Text>
+              <Text color="whiteAlpha.900">{result.detectionCount.malware}</Text>
+              <Text color="whiteAlpha.800">Suspicious:</Text>
+              <Text color="whiteAlpha.900">{result.detectionCount.suspicious}</Text>
+              <Text color="whiteAlpha.800">Malicious:</Text>
+              <Text color="whiteAlpha.900">{result.detectionCount.malicious}</Text>
             </SimpleGrid>
           </Box>
         </SimpleGrid>
       </Box>
 
       <Box>
-        <Heading size="md" mb={2}>Detected Threats</Heading>
+        <Heading size="md" mb={2} color="whiteAlpha.900">Detected Threats</Heading>
         <List spacing={2}>
           {result.threats.map((threat, index) => (
-            <ListItem key={index} display="flex" alignItems="center">
+            <ListItem 
+              key={index} 
+              display="flex" 
+              alignItems="center"
+              p={3}
+              bg="glassDark"
+              backdropFilter="blur(10px)"
+              borderRadius="xl"
+              borderWidth="1px"
+              borderColor="glassStroke"
+            >
               <ListIcon
                 as={threat.startsWith('ML Model:') ? FaRobot : FaExclamationTriangle}
-                color={threat.startsWith('ML Model:') ? 'blue.500' : 'red.500'}
+                color={threat.startsWith('ML Model:') ? 'primary.400' : 'red.400'}
               />
-              <Text>{threat}</Text>
+              <Text color="whiteAlpha.900">{threat}</Text>
             </ListItem>
           ))}
         </List>
       </Box>
 
       <Box>
-        <Heading size="md" mb={2}>Categories</Heading>
+        <Heading size="md" mb={2} color="whiteAlpha.900">Categories</Heading>
         <Wrap>
           {result.categories.map((category, index) => (
             <WrapItem key={index}>
@@ -1425,6 +1598,10 @@ const ThreatDetails: React.FC<{ result: ScanResult }> = ({ result }) => {
                 colorScheme={category === 'phishing' ? 'red' : category === 'malware' ? 'orange' : 'yellow'}
                 p={2}
                 borderRadius="md"
+                bg="glassDark"
+                backdropFilter="blur(10px)"
+                borderWidth="1px"
+                borderColor="glassStroke"
               >
                 {category}
               </Badge>
@@ -1434,4 +1611,4 @@ const ThreatDetails: React.FC<{ result: ScanResult }> = ({ result }) => {
       </Box>
     </VStack>
   );
-}; 
+};

@@ -28,22 +28,30 @@ interface ScanHistoryProps {
 }
 
 export const ScanHistory: React.FC<ScanHistoryProps> = ({ history }) => {
-  const cardBg = useColorModeValue('white', 'gray.800');
-  const borderColor = useColorModeValue('gray.200', 'gray.700');
+  const cardBg = useColorModeValue('white', 'glassDark');
+  const borderColor = useColorModeValue('gray.200', 'glassStroke');
+  const textColor = useColorModeValue('gray.600', 'whiteAlpha.800');
 
   return (
     <Container maxW="container.lg" py={8}>
       <VStack spacing={8} align="stretch">
         <Box textAlign="center">
-          <Icon as={FaHistory} w={12} h={12} color="accent.blue" mb={4} />
+          <Icon 
+            as={FaHistory} 
+            w={12} 
+            h={12} 
+            color="primary.400" 
+            mb={4}
+            filter="drop-shadow(0 0 8px rgba(0, 255, 169, 0.3))"
+          />
           <Heading
             size="xl"
-            bgGradient="linear(to-r, accent.blue, primary.500)"
+            bgGradient="linear(to-r, primary.400, secondary.400)"
             bgClip="text"
           >
             Scan History
           </Heading>
-          <Text color="gray.600" mt={2}>
+          <Text color={textColor} mt={2}>
             Review your previous URL scans
           </Text>
         </Box>
@@ -62,9 +70,15 @@ export const ScanHistory: React.FC<ScanHistoryProps> = ({ history }) => {
                 borderRadius="xl"
                 borderWidth={1}
                 borderColor={borderColor}
-                boxShadow="lg"
+                backdropFilter="blur(10px)"
+                boxShadow="0 8px 32px rgba(0, 0, 0, 0.3)"
                 position="relative"
                 overflow="hidden"
+                transition="all 0.2s"
+                _hover={{
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 12px 48px rgba(0, 0, 0, 0.4)'
+                }}
               >
                 <Box
                   position="absolute"
@@ -87,7 +101,7 @@ export const ScanHistory: React.FC<ScanHistoryProps> = ({ history }) => {
                   <Box>
                     <Text
                       fontSize="sm"
-                      color="gray.500"
+                      color={textColor}
                       mb={1}
                     >
                       {new Date(item.timestamp).toLocaleString()}
@@ -95,6 +109,7 @@ export const ScanHistory: React.FC<ScanHistoryProps> = ({ history }) => {
                     <Text
                       fontSize="md"
                       fontWeight="medium"
+                      color="whiteAlpha.900"
                       noOfLines={1}
                     >
                       {item.url}
@@ -146,14 +161,15 @@ export const ScanHistory: React.FC<ScanHistoryProps> = ({ history }) => {
 
         {history.length === 0 && (
           <Box
-            textAlign="center"
-            p={8}
-            bg={cardBg}
-            borderRadius="xl"
-            borderWidth={1}
-            borderColor={borderColor}
+          textAlign="center"
+          p={8}
+          bg={cardBg}
+          borderRadius="xl"
+          borderWidth={1}
+          borderColor={borderColor}
+          backdropFilter="blur(10px)"
           >
-            <Text color="gray.500">No scan history available</Text>
+          <Text color={textColor}>No scan history available</Text>
           </Box>
         )}
       </VStack>

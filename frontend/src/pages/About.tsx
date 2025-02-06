@@ -32,41 +32,42 @@ interface FeatureProps {
 }
 
 const Feature: React.FC<FeatureProps> = ({ title, icon, children, index }) => {
-  const { colorMode } = useColorMode()
-  
   return (
     <MotionBox
       variants={itemVariants}
       custom={index}
       whileHover="hover"
       whileTap="tap"
-      bg={colorMode === 'dark' ? 'rgba(17, 25, 40, 0.75)' : 'rgba(255, 255, 255, 0.75)'}
+      bg="glassDark"
       backdropFilter="blur(10px)"
       p={6}
-      borderRadius="lg"
-      border="1px solid"
-      borderColor={colorMode === 'dark' ? 'rgba(255, 255, 255, 0.125)' : 'rgba(255, 255, 255, 0.75)'}
+      borderRadius="xl"
+      borderWidth="1px"
+      borderColor="glassStroke"
+      boxShadow="0 8px 32px rgba(0, 0, 0, 0.3)"
+      _hover={{
+        transform: 'translateY(-2px)',
+        boxShadow: '0 12px 48px rgba(0, 0, 0, 0.4)'
+      }}
     >
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: index * 0.1, type: "spring", stiffness: 200 }}
       >
-        <Icon as={icon} w={10} h={10} color="brand.500" mb={4} />
+        <Icon as={icon} w={10} h={10} color="primary.400" mb={4} />
       </motion.div>
-      <Heading size="md" mb={2} color={colorMode === 'dark' ? 'white' : 'gray.800'}>
+      <Heading size="md" mb={2} color="whiteAlpha.900">
         {title}
       </Heading>
-      <Text color={colorMode === 'dark' ? 'gray.300' : 'gray.600'}>{children}</Text>
+      <Text color="whiteAlpha.800">{children}</Text>
     </MotionBox>
   )
 }
 
 const About: React.FC = () => {
-  const { colorMode } = useColorMode()
-  const cardBg = useColorModeValue('white', 'gray.800')
-
   const features = [
+
     {
       icon: FaShieldAlt,
       title: 'URL Protection',
@@ -94,33 +95,41 @@ const About: React.FC = () => {
         <VStack spacing={10}>
           <Box textAlign="center">
             <Heading
-              bgGradient="linear(to-r, primary.500, secondary.500)"
+              bgGradient="linear(to-r, primary.400, secondary.400)"
               bgClip="text"
               fontSize={{ base: '3xl', md: '4xl' }}
               fontWeight="bold"
             >
               About URL Guardian
             </Heading>
-            <Text mt={4} color="gray.600" fontSize="lg">
+            <Text mt={4} color="whiteAlpha.800" fontSize="lg">
               Your first line of defense against malicious URLs
             </Text>
           </Box>
 
           <SimpleGrid columns={{ base: 1, md: 3 }} spacing={8} w="full">
             {features.map((feature, index) => (
-              <Box
+                <Box
                 key={index}
-                bg={cardBg}
+                bg="glassDark"
                 p={6}
                 borderRadius="xl"
-                boxShadow="xl"
+                borderWidth="1px"
+                borderColor="glassStroke"
+                boxShadow="0 8px 32px rgba(0, 0, 0, 0.3)"
                 textAlign="center"
-              >
-                <Icon as={feature.icon} w={10} h={10} color="primary.500" mb={4} />
-                <Heading size="md" mb={2}>
+                backdropFilter="blur(10px)"
+                transition="all 0.2s"
+                _hover={{
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 12px 48px rgba(0, 0, 0, 0.4)'
+                }}
+                >
+                <Icon as={feature.icon} w={10} h={10} color="primary.400" mb={4} />
+                <Heading size="md" mb={2} color="whiteAlpha.900">
                   {feature.title}
                 </Heading>
-                <Text color="gray.600">{feature.description}</Text>
+                <Text color="whiteAlpha.800">{feature.description}</Text>
               </Box>
             ))}
           </SimpleGrid>

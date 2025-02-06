@@ -3,14 +3,12 @@ import { ChakraProvider, ColorModeScript, Box } from '@chakra-ui/react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { theme } from './theme'
-import Navbar from './components/Navbar'
+import { TubelightNavbar } from './components/TubelightNavbar'
 import Home from './pages/Home'
 import History from './pages/History'
 import About from './pages/About'
-import { URLScanner } from './components/URLScanner'
 import SecurityGuide from './pages/SecurityGuide'
 
-// Wrap routes with AnimatePresence for page transitions
 const AnimatedRoutes = () => {
   const location = useLocation()
   
@@ -29,15 +27,27 @@ const AnimatedRoutes = () => {
 const App: React.FC = () => {
   return (
     <ChakraProvider theme={theme}>
-      <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+      <ColorModeScript initialColorMode="dark" />
       <Box
         minH="100vh"
-        bgGradient="linear(to-br, blue.50, purple.50)"
+        bg="darkBg.900"
+        backgroundImage="radial-gradient(circle at 50% 0%, rgba(0, 255, 169, 0.15), transparent 50%), radial-gradient(circle at 100% 0%, rgba(255, 0, 132, 0.15), transparent 50%)"
         backgroundAttachment="fixed"
+        color="whiteAlpha.900"
+        position="relative"
       >
         <Router>
-          <Navbar />
-          <AnimatedRoutes />
+          <Box position="relative" width="100%">
+            <TubelightNavbar />
+            <Box 
+              pt={{ base: "6rem", md: "8rem" }}
+              px={{ base: 4, md: 6 }}
+              maxW="1200px"
+              mx="auto"
+            >
+              <AnimatedRoutes />
+            </Box>
+          </Box>
         </Router>
       </Box>
     </ChakraProvider>

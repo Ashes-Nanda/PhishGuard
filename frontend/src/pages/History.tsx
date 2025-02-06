@@ -58,65 +58,84 @@ const History: React.FC = () => {
       <VStack spacing={8} align="stretch">
         <Box textAlign="center">
           <Heading
-            as="h1"
-            size="xl"
-            bgGradient="linear(to-r, primary.500, secondary.500)"
-            bgClip="text"
+          as="h1"
+          size="xl"
+          bgGradient="linear(to-r, primary.400, secondary.400)"
+          bgClip="text"
           >
-            Scan History
+          Scan History
           </Heading>
-          <Text color="gray.600" mt={2}>
-            View your previous URL scan results
+          <Text color="whiteAlpha.800" mt={2}>
+          View your previous URL scan results
           </Text>
         </Box>
 
         {history.length === 0 ? (
-          <Box textAlign="center" py={10}>
-            <Text color="gray.500">No scan history available</Text>
+          <Box 
+          textAlign="center" 
+          py={10}
+          bg="glassDark"
+          borderRadius="xl"
+          borderWidth="1px"
+          borderColor="glassStroke"
+          backdropFilter="blur(10px)"
+          >
+          <Text color="whiteAlpha.800">No scan history available</Text>
           </Box>
         ) : (
-          <Box overflowX="auto">
-            <Table variant="simple">
-              <Thead>
-                <Tr>
-                  <Th>URL</Th>
-                  <Th>Status</Th>
-                  <Th>Scanned At</Th>
-                  <Th>Message</Th>
-                  <Th>Actions</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {history.map((item) => (
-                  <Tr key={item.timestamp}>
-                    <Td maxW="300px" isTruncated>
-                      <Tooltip label={item.url}>
-                        <Text>{item.url}</Text>
-                      </Tooltip>
-                    </Td>
-                    <Td>
-                      <Badge
-                        colorScheme={item.isSafe ? 'green' : 'red'}
-                        borderRadius="full"
-                        px={2}
-                      >
-                        {item.isSafe ? 'Safe' : 'Unsafe'}
-                      </Badge>
-                    </Td>
-                    <Td>{new Date(item.timestamp).toLocaleString()}</Td>
-                    <Td maxW="200px" isTruncated>
-                      <Tooltip label={item.message}>
-                        <Text>{item.message}</Text>
-                      </Tooltip>
-                    </Td>
-                    <Td>
-                      <IconButton
-                        aria-label="Delete scan"
-                        icon={<FaTrash />}
-                        size="sm"
-                        colorScheme="red"
-                        variant="ghost"
-                        onClick={() => handleDelete(item.timestamp)}
+          <Box 
+          overflowX="auto"
+          bg="glassDark"
+          borderRadius="xl"
+          borderWidth="1px"
+          borderColor="glassStroke"
+          backdropFilter="blur(10px)"
+          p={4}
+          >
+          <Table variant="simple">
+            <Thead>
+            <Tr>
+              <Th color="whiteAlpha.900">URL</Th>
+              <Th color="whiteAlpha.900">Status</Th>
+              <Th color="whiteAlpha.900">Scanned At</Th>
+              <Th color="whiteAlpha.900">Message</Th>
+              <Th color="whiteAlpha.900">Actions</Th>
+            </Tr>
+            </Thead>
+            <Tbody>
+            {history.map((item) => (
+              <Tr key={item.timestamp} _hover={{ bg: 'whiteAlpha.50' }}>
+              <Td maxW="300px" isTruncated color="whiteAlpha.900">
+                <Tooltip label={item.url}>
+                <Text>{item.url}</Text>
+                </Tooltip>
+              </Td>
+              <Td>
+                <Badge
+                colorScheme={item.isSafe ? 'green' : 'red'}
+                borderRadius="full"
+                px={2}
+                bg={item.isSafe ? 'rgba(56, 161, 105, 0.1)' : 'rgba(245, 101, 101, 0.1)'}
+                backdropFilter="blur(10px)"
+                borderWidth="1px"
+                borderColor="glassStroke"
+                >
+                {item.isSafe ? 'Safe' : 'Unsafe'}
+                </Badge>
+              </Td>
+              <Td color="whiteAlpha.900">{new Date(item.timestamp).toLocaleString()}</Td>
+              <Td maxW="200px" isTruncated color="whiteAlpha.900">
+                <Tooltip label={item.message}>
+                <Text>{item.message}</Text>
+                </Tooltip>
+              </Td>
+              <Td>
+                <IconButton
+                aria-label="Delete scan"
+                icon={<FaTrash />}
+                size="sm"
+                variant="glass"
+                onClick={() => handleDelete(item.timestamp)}
                       />
                     </Td>
                   </Tr>
