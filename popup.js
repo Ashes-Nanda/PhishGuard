@@ -30,7 +30,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		// Animate confidence bar
 		setTimeout(() => {
 			confidenceFill.style.width = `${confidence * 100}%`;
-			confidenceFill.style.backgroundColor = is_phishing ? '#ef4444' : '#22c55e';
+			// Remove backgroundColor setting as we're using gradient in CSS
+			confidenceFill.style.background = 'linear-gradient(to right, #00FFA9, #FF0084)';
 		}, 100);
 		
 		// Update threat level with animation
@@ -47,8 +48,8 @@ document.addEventListener('DOMContentLoaded', function() {
 					const featureItem = document.createElement('div');
 					featureItem.className = 'feature-item';
 					featureItem.innerHTML = `
-						<span class="feature-icon">⚠️</span>
-						<span>${formatFeatureName(feature)}</span>
+						<span class="feature-icon" style="color: rgba(255, 0, 132, 0.9);">⚠️</span>
+						<span class="feature-text">${formatFeatureName(feature)}</span>
 					`;
 					featuresList.appendChild(featureItem);
 				}
@@ -56,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
 		} else {
 			const noFeatures = document.createElement('div');
 			noFeatures.className = 'feature-item';
-			noFeatures.innerHTML = '<span>No suspicious features detected</span>';
+			noFeatures.innerHTML = '<span class="feature-text">No suspicious features detected</span>';
 			featuresList.appendChild(noFeatures);
 		}
 

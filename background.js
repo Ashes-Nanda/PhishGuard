@@ -166,6 +166,53 @@ class URLFeatureExtractor {
 
 const analyzer = new URLFeatureExtractor();
 
+// Create a notification system
+function showToast(result) {
+	const options = {
+		type: 'basic',
+		iconUrl: 'icons/icon128.png',
+		title: result.is_phishing ? 'Warning: Potentially Unsafe Website' : 'Safe Website',
+		message: `Threat Level: ${result.threat_level.toUpperCase()}\nConfidence: ${Math.round(result.confidence * 100)}%`
+	};
+
+	chrome.notifications.create('urlScan_' + Date.now(), options);
+}
+
+// Track previously scanned URLs to avoid duplicate notifications
+const scannedUrls = new Set();
+
+// Listen for tab updates
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+	if (changeInfo.status === 'complete' && tab.url && tab.url.startsWith('http')) {
+		// Check if URL was recently scanned
+		if (!scannedUrls.has(tab.url)) {
+			const result = analyzer.predictUrl(tab.url);
+			
+			// Show notification based on threat level
+			if (result.threat_level === 'high' || result.threat_level === 'medium') {
+				showToast(result);
+			}
+
+			// Add URL to recently scanned set
+			scannedUrls.add(tab.url);
+
+			// Clear URL from set after 5 minutes to allow rescanning
+			setTimeout(() => {
+				scannedUrls.delete(tab.url);
+			}, 5 * 60 * 1000);
+
+			// Update extension icon and badge based on threat level
+			const iconColor = result.is_phishing ? '#FF0084' : '#00FFA9';
+			chrome.action.setBadgeBackgroundColor({ color: iconColor });
+			chrome.action.setBadgeText({ 
+				text: result.threat_level === 'safe' ? '✓' : '!',
+				tabId: tabId
+			});
+		}
+	}
+});
+
+// Existing message listener
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 	if (request.action === 'analyzeUrl') {
 		const result = analyzer.predictUrl(request.url);
