@@ -69,22 +69,26 @@ router.post('/scan-url', async (req, res) => {
       return res.status(400).json({ error: 'URL is required' });
     }
 
-    // Store scan request in history
     const scanRef = await collections.scanHistory.add({
       url,
       timestamp: new Date(),
       status: 'pending'
     });
 
-    // Perform both checks in parallel
     const [mlResult, vtResult] = await Promise.all([
       urlFeatureExtractor.predict_url(url),
       checkVirusTotal(url)
     ]);
     
-    // Combined threat assessment
-    const isSafe = mlResult.is_phishing === false && vtResult.isClean === true;
-    const combinedConfidence = (mlResult.confidence + vtResult.confidence) / 2;
+    // Weighted confidence calculation - give more weight to ML result for typosquatting
+    const mlWeight = mlResult.features.typosquatting ? 0.7 : 0.5;
+    const vtWeight = mlResult.features.typosquatting ? 0.3 : 0.5;
+    const combinedConfidence = (mlResult.confidence * mlWeight) + (vtResult.confidence * vtWeight);
+
+    // More stringent safety check for typosquatting
+    const isSafe = mlResult.features.typosquatting ? 
+      (mlResult.confidence > 0.95 && vtResult.isClean) : 
+      (mlResult.is_phishing === false && vtResult.isClean === true);
 
     const result = {
       url,
@@ -92,34 +96,38 @@ router.post('/scan-url', async (req, res) => {
       confidence: combinedConfidence,
       mlConfidence: mlResult.confidence,
       vtConfidence: vtResult.confidence,
+      features: mlResult.features, // Include detected features in response
       message: isSafe ? 
         "This URL appears to be safe" : 
-        "Warning: This URL shows signs of being malicious",
-      severity: isSafe ? "low" : "high",
+        mlResult.features.typosquatting ? 
+          "Warning: This URL appears to be a typosquatting attempt" :
+          "Warning: This URL shows signs of being malicious",
+      severity: isSafe ? "low" : mlResult.features.typosquatting ? "high" : "medium",
       categories: [
         ...(mlResult.is_phishing ? ["phishing"] : []),
+        ...(mlResult.features.typosquatting ? ["typosquatting"] : []),
         ...(vtResult.detections > 0 ? ["malicious"] : [])
       ],
       threats: [
         ...(mlResult.is_phishing ? ["ML Model: Potential phishing URL detected"] : []),
+        ...(mlResult.features.typosquatting ? ["ML Model: Typosquatting attempt detected"] : []),
         ...(vtResult.detections > 0 ? [`VirusTotal: ${vtResult.detections} security vendors flagged this URL`] : [])
       ],
       detectionCount: {
         phishing: mlResult.is_phishing ? 1 : 0,
+        typosquatting: mlResult.features.typosquatting ? 1 : 0,
         malware: vtResult.detections > 0 ? 1 : 0,
-        suspicious: (mlResult.is_phishing || vtResult.detections > 0) ? 1 : 0,
+        suspicious: (mlResult.is_phishing || vtResult.detections > 0 || mlResult.features.typosquatting) ? 1 : 0,
         malicious: vtResult.detections
       },
       timestamp: new Date().toISOString()
     };
 
-    // Update scan history with results
     await scanRef.update({
       status: 'completed',
       ...result
     });
 
-    // Send response
     res.json(result);
 
   } catch (error) {
