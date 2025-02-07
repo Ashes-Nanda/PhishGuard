@@ -40,13 +40,13 @@ export class URLFeatureExtractor {
         has_double_slash: 1.5,
         has_prefix_suffix: 1.0,
         has_multiple_subdomains: 2.0,
-        has_suspicious_keywords: 2.5,
-        has_suspicious_tld: 2.5,
+        has_suspicious_keywords: 3.0,
+        has_suspicious_tld: 3.0,
         has_numeric_subdomain: 2.0,
         has_random_subdomain: 2.0,
         no_ssl: 2.5,
         encoding_techniques: 2.0,
-        typosquatting: 2.5,
+        typosquatting: 3.5,
         redirect_chains: 2.0
     };
 
@@ -81,18 +81,33 @@ export class URLFeatureExtractor {
 
     private checkTyposquatting(domain: string): number {
         const commonTypos = {
-            'google': /g[o0]{2}gle/i,
-            'facebook': /faceb[o0]{2}k/i,
-            'microsoft': /micr[o0]s[o0]ft/i,
-            'apple': /[a@]pple/i,
-            'amazon': /amaz[o0]n/i
+            'google': /g[o0]{1,2}gle|go{2,}gle|g0{2,}gle/i,
+            'facebook': /f[a@]ce?b[o0]{1,2}k|faceb[o0]{2,}k/i,
+            'microsoft': /micr[o0]s[o0]ft|micros[o0]ft|micr[o0]soft/i,
+            'apple': /[a@]pple|ap+le/i,
+            'amazon': /amaz[o0]n|am[a@]z[o0]n/i,
+            'paypal': /p[a@]yp[a@]l|p[a@]yp[a@]ll/i,
+            'netflix': /n[e3]tfl[i1]x|netfl[i1]x/i,
+            'instagram': /[i1]nst[a@]gr[a@]m/i
         };
 
+        // Check for number substitutions (like 0 for o)
+        const hasNumberSubstitution = /[0-9]/.test(domain);
+        
+        // Check for character repetition (like googgle)
+        const hasCharRepetition = /(.)\1{2,}/.test(domain);
+
         for (const [legitimate, pattern] of Object.entries(commonTypos)) {
-            if (pattern.test(domain) && domain !== legitimate) {
+            if (pattern.test(domain) && domain.toLowerCase() !== legitimate) {
                 return -1;
             }
         }
+
+        // If there are number substitutions or character repetitions, consider it suspicious
+        if (hasNumberSubstitution || hasCharRepetition) {
+            return -1;
+        }
+
         return 1;
     }
 
@@ -264,7 +279,7 @@ export class URLFeatureExtractor {
                                confidence < 0.85 ? 'low' : 'safe';
 
             return {
-                is_phishing: confidence < 0.75,
+                is_phishing: confidence < 0.85,
                 confidence,
                 features: activeFeatures,
                 whitelisted: false,
