@@ -124,16 +124,16 @@ document.addEventListener('DOMContentLoaded', async function() {
 			const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 			const subject = encodeURIComponent('Report Suspicious Website');
 			const body = encodeURIComponent(`Suspicious URL: ${tab.url}\n\nThis website has been detected as potentially malicious by the URL Safety Scanner extension.`);
-			const mailtoUrl = `mailto:mpcyberpolice@gmail.com?subject=${subject}&body=${body}`;
+			const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=mpcyberpolice@gmail.com&su=${subject}&body=${body}`;
 			
-			chrome.tabs.create({ url: mailtoUrl });
+			chrome.tabs.create({ url: gmailUrl });
 			chrome.tabs.create({ url: 'https://cybercrime.gov.in/' });
 			
 			chrome.notifications.create('report_' + Date.now(), {
 				type: 'basic',
 				iconUrl: 'icons/icon128.png',
 				title: 'Report Initiated',
-				message: 'Opening email client and cyber crime portal to report the malicious website.'
+				message: 'Opening Gmail and cyber crime portal to report the malicious website.'
 			});
 		} catch (error) {
 			console.error('Error reporting website:', error);
