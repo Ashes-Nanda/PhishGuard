@@ -12,22 +12,22 @@ class URLFeatureExtractor {
 		]);
 		
 		this.weights = {
-			has_ip_address: 4.0,
-			long_url: 2.0,
-			uses_shortener: 3.0,
-			has_at_symbol: 2.5,
-			has_double_slash: 2.5,
-			has_prefix_suffix: 2.0,
-			has_multiple_subdomains: 3.0,
-			has_suspicious_keywords: 3.5,
-			has_suspicious_tld: 3.5,
-			has_numeric_subdomain: 3.0,
-			has_random_subdomain: 3.0,
-			no_ssl: 3.0,
-			encoding_techniques: 3.0,
+			has_ip_address: 3.0,
+			long_url: 1.0,
+			uses_shortener: 2.0,
+			has_at_symbol: 1.5,
+			has_double_slash: 1.5,
+			has_prefix_suffix: 1.0,
+			has_multiple_subdomains: 2.0,
+			has_suspicious_keywords: 3.0,
+			has_suspicious_tld: 3.0,
+			has_numeric_subdomain: 2.0,
+			has_random_subdomain: 2.0,
+			no_ssl: 2.5,
+			encoding_techniques: 2.0,
 			typosquatting: 3.5,
-			brand_impersonation: 4.0,
-			suspicious_platform: 3.0
+			brand_impersonation: 3.5,
+			suspicious_platform: 2.0
 		};
 
 		this.commonBrands = [
@@ -88,24 +88,32 @@ class URLFeatureExtractor {
 
 	checkTyposquatting(domain) {
 		const commonTypos = {
-			'google': /g[o0]{2}gle/i,
-			'facebook': /f[a@]ceb[o0]{2}k/i,
-			'microsoft': /micr[o0]s[o0]ft/i,
-			'apple': /[a@]pple/i,
-			'amazon': /[a@]m[a@]z[o0]n/i,
-			'paypal': /p[a@]yp[a@]l/i,
-			'netflix': /n[e3]tfl[i1]x/i,
+			'google': /g[o0]{1,2}gle|go{2,}gle|g0{2,}gle/i,
+			'facebook': /f[a@]ce?b[o0]{1,2}k|faceb[o0]{2,}k/i,
+			'microsoft': /micr[o0]s[o0]ft|micros[o0]ft|micr[o0]soft/i,
+			'apple': /[a@]pple|ap+le/i,
+			'amazon': /amaz[o0]n|am[a@]z[o0]n/i,
+			'paypal': /p[a@]yp[a@]l|p[a@]yp[a@]ll/i,
+			'netflix': /n[e3]tfl[i1]x|netfl[i1]x/i,
+			'instagram': /[i1]nst[a@]gr[a@]m/i,
 			'blockchain': /bl[o0]ckch[a@][i1]n/i,
 			'trezor': /tr[e3]z[o0]r/i,
 			'metamask': /m[e3]t[a@]m[a@]sk/i
 		};
 
+		// Check for number substitutions (like 0 for o)
+		const hasNumberSubstitution = /[0-9]/.test(domain);
+		
+		// Check for character repetition (like googgle)
+		const hasCharRepetition = /(.)\1{2,}/.test(domain);
+
 		for (const [legitimate, pattern] of Object.entries(commonTypos)) {
-			if (pattern.test(domain) && domain !== legitimate) {
+			if (pattern.test(domain) && domain.toLowerCase() !== legitimate) {
 				return true;
 			}
 		}
-		return false;
+
+		return hasNumberSubstitution || hasCharRepetition;
 	}
 
 	predictUrl(url) {
@@ -141,12 +149,12 @@ class URLFeatureExtractor {
 			const confidence = totalWeight > 0 ? 
 				1 - (weightedNegativeScore / totalWeight) : 0.5;
 
-			const threat_level = confidence < 0.4 ? 'high' :
-							   confidence < 0.6 ? 'medium' :
-							   confidence < 0.75 ? 'low' : 'safe';
+			const threat_level = confidence < 0.5 ? 'high' :
+							   confidence < 0.7 ? 'medium' :
+							   confidence < 0.85 ? 'low' : 'safe';
 
 			return {
-				is_phishing: confidence < 0.65,
+				is_phishing: confidence < 0.85,
 				confidence,
 				features,
 				whitelisted: false,
@@ -168,11 +176,17 @@ const analyzer = new URLFeatureExtractor();
 
 // Create a notification system
 function showToast(result) {
+	let message = `Threat Level: ${result.threat_level.toUpperCase()}\nConfidence: ${Math.round(result.confidence * 100)}%`;
+	
+	if (result.features.typosquatting) {
+		message = `Warning: Possible typosquatting attempt detected!\n${message}`;
+	}
+
 	const options = {
 		type: 'basic',
 		iconUrl: 'icons/icon128.png',
 		title: result.is_phishing ? 'Warning: Potentially Unsafe Website' : 'Safe Website',
-		message: `Threat Level: ${result.threat_level.toUpperCase()}\nConfidence: ${Math.round(result.confidence * 100)}%`
+		message: message
 	};
 
 	chrome.notifications.create('urlScan_' + Date.now(), options);
